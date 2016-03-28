@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>MEDISYS</title>
+    <title><%= title %></title>
     <link rel="stylesheet" href="/icons/css/icons.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
 
@@ -53,15 +53,16 @@
             </thead>
 
             <tbody>
+            <% for (var i = 0; i < products.length; i++){ %>       
                 <tr>
                     <td>120001</td>
-                    <td>Nimulid</td>
-                    <td>45</td>
-                    <td>&#8377 292.30</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>12-08-2016</td>
+                    <td><%= products[i].name %></td>
+                    <td><%= products[i].stock %></td>
+                    <td>&#8377 <%= products[i].price %></td>
+                    <td><%= products[i].supplierID %></td>
+                    <td><%= products[i].expiry %></td>
                 </tr>
-
+            <% } %>
                 <tr>
                     <td>120002</td>
                     <td>Cipro</td>
