@@ -71,15 +71,15 @@ a:hover {
 .user-name {
     display: inline-block;
     position: absolute;
-    width: 50%;
+    width: auto;
     height: 10%;
-    padding: 20px;
+    padding: 10px 0px 20px 20px;
 }
 
 .user-name span{
     font-family: calibri;
     color: white;
-    font-size: 20px;
+    font-size: 1.2em;
 }
 
 .user-name #type{
@@ -148,7 +148,7 @@ a:hover {
     display: inline-block;
     margin: 15px 50px;
     font-size: 25px;
-    font-family: calibri light;
+    font-family: 'Calibri light';
     color: #555;
 }
 
@@ -160,30 +160,28 @@ a:hover {
     bottom: 0;
     right: 0;
     box-sizing: border-box;
-    padding: 150px 200px 50px 200px;
+    padding: 150px 200px;
 }
 
 
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    border: 1px solid #4CAF50;
-    font-family: mangal
+.pure-table {
+    border: 1px solid #ddd;
+    font-family: mangal;
 }
 
-th, td {
+.pure-table th, td {
     text-align: left;
     padding: 8px;
 }
 
-tr:nth-child(even){background-color: #f2f2f2}
+.pure-table tr:nth-child(even){background-color: #f2f2f2}
 
-tr:hover {
+.pure-table tr:hover {
     background-color: #7ed077;
     color: white;
 }
-th {
+.pure-table th {
     background-color: #4CAF50;
     color: white;
 }
@@ -197,8 +195,6 @@ th {
     background-size: contain;
     opacity: 0.2;
 }
-
-
 
 .login-background {
     width: 100%;
@@ -269,4 +265,43 @@ th {
     margin: 0 20px;
     text-align: center;
 
+}
+
+/* ---- DASHBOARD WIDGETS ---- */
+
+.widget {
+    display: inline-block;
+    width: 48%;
+    height: 50%;
+    box-sizing: border-box;
+    border: 1px solid #f63;
+    margin: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#content-widget {
+    padding: 100px 200px;
+}
+
+.widget-heading {
+    width: 100%;
+    height: 50px;
+    position: relative;
+    top: 0;
+    background: #f63;
+    padding: 10px 25px;
+    font-weight: bold;
+    color: white;
+    font-size: 20px;
+}
+
+.widget-content {
+    width: 100%;
+    padding: 15px;
+}
+
+#placeholder {
+    color: #aaa;
+    margin-top: 40px;
 }

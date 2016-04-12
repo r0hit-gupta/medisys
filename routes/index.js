@@ -34,14 +34,28 @@ router.get('/', function(req, res, next) {
 router.get('/dashboard', checkAuth, function(req, res, next) {
 	var db = req.db;
     var collection = db.get('products');
-    collection.find({},{},function(e,docs){
+    collection.find({ stock: {$lt : 10}},{},function(e,docs){
         res.render('dashboard', {
-            title : "MediSys",
-            "products" : docs
+            title : "dashboard",
+            "products" : docs,
         });
     });
     
 });
+
+/* GET Products Page. */
+router.get('/products', checkAuth, function(req, res, next) {
+    var db = req.db;
+    var collection = db.get('products');
+    collection.find({},{},function(e,docs){
+        res.render('products', {
+            title : "products",
+            "products" : docs,
+        });
+    });
+    
+});
+
 
 /* GET Add New Product page. */
 router.get('/addproduct', checkAuth, function(req, res) {
@@ -87,8 +101,8 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
 
     // Get our form values. These rely on the "name" attributes
     var name = req.body.name;
-    var stock = req.body.stock;
-    var price = req.body.price;
+    var stock = parseInt(req.body.stock, 10);
+    var price = parseFloat(req.body.price, 10);
     var supplierName = req.body.supplier;
     var expiry = new Date(req.body.expiry);
 

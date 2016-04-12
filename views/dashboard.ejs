@@ -1,101 +1,51 @@
 <% include header %>
-
 <body>
 
     <% include infobars %>
 
-    
-    <!-- ----------- CONTENT ------------- -->
-    <div class="content">
-        <table class="pure-table">
-            <thead>
-                <tr>
-                    <th>Product ID</th>
-                    <th>Name</th>
-                    <th>Stock</th>
-                    <th>Price</th>
-                    <th>Supplier</th>
-                    <th>Expiry</th>
-                </tr>
-            </thead>
+    <div class="content" id="content-widget">
+    	<div class="widget" id="widget1">
+    		<div class="widget-heading">LOW STOCK PRODUCTS</div>
+    		<div class="widget-content" align="center">
+    		<% if (products.length > 0) { %>
+    			<table class="table table-striped">
+    				<thead>
+	                <tr>
+	                    <th>Product ID</th>
+	                    <th>Name</th>
+	                    <th>Stock</th>
+	                    <th>Supplier</th>
+	                </tr>
+            		</thead>
+            		<tbody>
+    					<% for (var i = 0; i < products.length; i++){ %> 
+		                <tr>
+		                    <td>MED023</td>
+		                    <td><%= products[i].name %></td>
+		                    <td><%= products[i].stock %></td>
+		                    <td><%= products[i].supplierName %></td>
+		                </tr>
 
-            <tbody>
-            <% for (var i = 0; i < products.length; i++){ %>       
-                <tr>
-                    <td>##</td>
-                    <td><%= products[i].name %></td>
-                    <td><%= products[i].stock %></td>
-                    <td>&#8377 <%= products[i].price %></td>
-                    <td><%= products[i].supplierName %></td>
-                    <td><%= products[i].expiry.toDateString() %></td>
-                </tr>
+		                <% } %>
+	                </tbody>
+	                </table>
+            <% } else {%>
+            	<i class="fa fa-thumbs-up fa-5x" id="placeholder"></i>
+            	<span id="placeholder"><h3>Looks like your inventory is stocked pretty good !<h3></span>
             <% } %>
-                <tr>
-                    <td>120002</td>
-                    <td>Cipro</td>
-                    <td>23</td>
-                    <td>&#8377 321.76</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>03-11-2016</td>
-                </tr>
-
-                <tr>
-                    <td>120003</td>
-                    <td>Cymbalta</td>
-                    <td>29</td>
-                    <td>&#8377 77.12</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>15-12-2016</td>
-                </tr>
-
-                <tr>
-                    <td>120004</td>
-                    <td>Flexeril</td>
-                    <td>10</td>
-                    <td>&#8377 123.43</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>12-08-2016</td>
-                </tr>
-
-                <tr>
-                    <td>120005</td>
-                    <td>Hydrocodone</td>
-                    <td>34</td>
-                    <td>&#8377 223.30</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>22-04-2016</td>
-                </tr>
-
-                <tr>
-                    <td>120006</td>
-                    <td>Lexapro</td>
-                    <td>38</td>
-                    <td>&#8377 32.30</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>19-03-2016</td>
-                </tr>
-
-                <tr>
-                    <td>120007</td>
-                    <td>Lisinopril</td>
-                    <td>5</td>
-                    <td>&#8377 46.99</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>12-04-2016</td>
-                </tr>
-
-                <tr>
-                    <td>120008</td>
-                    <td>Disprin</td>
-                    <td>9</td>
-                    <td>&#8377 61.39</td>
-                    <td>Cipla Pharm. Pvt Ltd</td>
-                    <td>17-05-2016</td>
-                </tr>
-            </tbody>
-        </table>
-        <a href="/addproduct"><div class="button">ADD NEW PRODUCT</div></a>
+				
+				
+    		</div>
+    	</div>
+		<div class="widget" id="widget2">
+			
+		</div>
+		<div class="widget" id="widget3">
+			
+		</div>
+		<div class="widget" id="widget4">
+			
+		</div>    	
     </div>
 </body>
-
 </html>
