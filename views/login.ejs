@@ -1,21 +1,20 @@
-<html>
-
-<head>
-    <title>MEDISYS</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-</head>
+<% include header %>
 
 <body>
     <div class="login-background">
     </div>
     <div class="login-box">
-        <div class="login-logo">     
-        </div>
+        <div class="login-logo"></div>
+
+       <% if (message != "") { %>
+        <div class="alert alert-danger" role="alert" id="login-alert"><%= message %></div>
+        <% } %>
+
         <div class="input-container">
-           <form action="dashboard">
-            <input type="text" required placeholder="Username">
-            <input type="password" required placeholder="Password">
-            <input type="submit" class="login-button" value="LOGIN">
+           <form action="/post/login" method="post">
+            <input type="text" required placeholder="Username" name="username">
+            <input type="password" required placeholder="Password" name="password">
+            <input type="submit" class="button" value="LOGIN">
             </form>
         </div>
     </div>

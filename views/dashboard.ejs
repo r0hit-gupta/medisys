@@ -1,43 +1,10 @@
-<html>
-
-<head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/icons/css/icons.css">
-    <link rel="stylesheet" href="/stylesheets/style.css">
-
-</head>
+<% include header %>
 
 <body>
 
-    <!-- ----------- SIDE BAR ------------- -->
-    <div class="sidebar">
-        <div class="sidebar-container">
-            <div class="user-info">
-                <div class="profile-pic"></div>
-                <div class="user-name">
-                    <span id="name">ROHIT GUPTA</span>
-                    <span id="type">Administrator</span>
-                    <br><span id="logout">Logout</span>
-                </div>
-            </div>
-            <div class="nav-links">
-                <ul>
-                    <li><i class="fa fa-home"></i>HOME</li>
-                    <li><i class="fa fa-cube"></i><span id="active">PRODUCTS</span></li>
-                    <li><i class="fa fa-print"></i>INVOICES</li>
-                    <li><i class="fa fa-cog"></i>SETTINGS</li>
-                </ul>
-            </div>
-            <div class="logo"></div>
-        </div>
-    </div>
-    <!-- ----------- TOP BAR ------------- -->
-    <div class="topbar">
-        <span class="heading">PRODUCTS</span>
-        <div class="notifications">
-            <i class="fa fa-bell"></i>
-        </div>
-    </div>
+    <% include infobars %>
+
+    
     <!-- ----------- CONTENT ------------- -->
     <div class="content">
         <table class="pure-table">
@@ -55,12 +22,12 @@
             <tbody>
             <% for (var i = 0; i < products.length; i++){ %>       
                 <tr>
-                    <td>120001</td>
+                    <td>##</td>
                     <td><%= products[i].name %></td>
                     <td><%= products[i].stock %></td>
                     <td>&#8377 <%= products[i].price %></td>
-                    <td><%= products[i].supplierID %></td>
-                    <td><%= products[i].expiry %></td>
+                    <td><%= products[i].supplierName %></td>
+                    <td><%= products[i].expiry.toDateString() %></td>
                 </tr>
             <% } %>
                 <tr>
@@ -127,6 +94,7 @@
                 </tr>
             </tbody>
         </table>
+        <a href="/addproduct"><div class="button">ADD NEW PRODUCT</div></a>
     </div>
 </body>
 

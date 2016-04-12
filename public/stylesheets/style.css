@@ -7,6 +7,29 @@ body {
 ul {
     list-style: none;
 }
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: none;
+}
+.button{
+    background: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 35px;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+}
+.button:hover{
+    background: #6e9f35;
+    cursor: pointer;
+}
+
 .sidebar {
     position: absolute;
     width: 15%;
@@ -41,7 +64,7 @@ ul {
     border-radius: 80px;
     border: 3px solid white;
     margin-left: 10px;
-    background: url(//images/forum-user.png) center bottom no-repeat;
+    background: url(/images/forum-user.png) center bottom no-repeat;
     background-size: 60px;
 }
 
@@ -180,9 +203,10 @@ th {
 .login-background {
     width: 100%;
     height: 100%;
-    background: url(/images/pattern.jpg) center center repeat;
+    background: #ddd url(/images/pattern.jpg) center center repeat;
     background-size: 250px;
-    opacity: .8;
+    opacity: .7;
+    background-blend-mode: multiply;
 }
 
 .login-box {
@@ -239,3 +263,10 @@ th {
 }
 
 
+#login-alert{
+    position: relative;
+    top: 140px;
+    margin: 0 20px;
+    text-align: center;
+
+}
