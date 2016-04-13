@@ -1,4 +1,8 @@
 var express = require('express');
+
+var request = require('request');
+var cheerio = require('cheerio');
+
 var router = express.Router();
 var auth_id = 0;
 
@@ -128,8 +132,38 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
     });
 });
 
+/* POST Medicine Search Scraper */
+router.get('/api/scrape', function(req, res){
 
+    //var title = req.body.keyword;
+    //var keyword = title.replace(" ", "-");
+    var keyword = req.query.keyword; //"aspirin";
+    var url = 'http://www.drugs.com/' + keyword + '.html';
+    //var description;
+    var json = {"description" : "", "image": ""};
 
+    request(url, function(error, response, html){
+
+        if(!error){
+
+            var $ = cheerio.load(html);
+            // Selects description 
+            $("p[itemprop='description']").filter(function(){
+                json.description = $(this).text();
+            });
+
+            // Selects image URL
+            $("img[itemprop='contentUrl']").filter(function(){
+                json.image = $(this).attr('src');
+            });
+            res.json(json);
+        }
+        else{
+            res.send("Error");
+        }
+        //res.send(json);
+    });
+});
 
 
 module.exports = router;

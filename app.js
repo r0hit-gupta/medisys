@@ -5,9 +5,16 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// Web Scraping Tools
+var request = require('request');
+var cheerio = require('cheerio');
+
+// DataBase Tools
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('localhost:27017/medisys');
+//var db = monk('localhost:27017/medisys');
+var db = monk('mongodb://medisys:medisys123@ds023500.mlab.com:23500/medisys');
+
 
 var routes = require('./routes/index');
 

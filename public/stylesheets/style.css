@@ -274,7 +274,7 @@ a:hover {
     width: 48%;
     height: 50%;
     box-sizing: border-box;
-    border: 1px solid #f63;
+    border: 1px solid #e74c3c;
     margin: 10px;
     border-radius: 5px;
     overflow: hidden;
@@ -289,7 +289,7 @@ a:hover {
     height: 50px;
     position: relative;
     top: 0;
-    background: #f63;
+    background: #e74c3c;
     padding: 10px 25px;
     font-weight: bold;
     color: white;
@@ -304,4 +304,27 @@ a:hover {
 #placeholder {
     color: #aaa;
     margin-top: 40px;
+}
+#widget2 {
+    border-color: #16a085;
+}
+#widget2 .widget-heading {
+    background: #16a085;
+}
+
+
+/* ---------  ONLINE MEDICINE SEARCH ----------- */
+
+.medicine-info-scrape p {
+    display: inline-block;
+    width: 50%;
+    padding-right: 5px;
+}
+
+.medicine-info-scrape img {
+    display: inline-block;
+    max-width: 50%;
+    width: auto;
+    height: auto;
+    margin-top: -50px;
 }
