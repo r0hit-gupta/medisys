@@ -33,6 +33,7 @@ a:hover {
 .sidebar {
     position: absolute;
     width: 15%;
+    min-width: 240px;
     height: 100%;
     background: #212121;
 }

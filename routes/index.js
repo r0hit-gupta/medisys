@@ -133,7 +133,7 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
 });
 
 /* POST Medicine Search Scraper */
-router.get('/api/scrape', function(req, res){
+router.get('/api/scrape', checkAuth, function(req, res){
 
     //var title = req.body.keyword;
     //var keyword = title.replace(" ", "-");
@@ -161,7 +161,6 @@ router.get('/api/scrape', function(req, res){
         else{
             res.send("Error");
         }
-        //res.send(json);
     });
 });
 
