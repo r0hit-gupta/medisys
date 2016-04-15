@@ -73,7 +73,7 @@ router.get('/products/search', checkAuth, function(req, res, next) {
     var collection = db.get('products');
     
     collection.find(query ,{},function(e,docs){
-        console.log(docs);
+        
         res.render('products', {
             title : 'Search Results for "'+keyword+'"',
             "products" : docs,
@@ -82,6 +82,33 @@ router.get('/products/search', checkAuth, function(req, res, next) {
     
 });
 
+/* Edit Products Page. */
+router.get('/products/:product', checkAuth, function(req, res, next) {
+    var success = req.query.success;
+    var db = req.db;
+    var product = req.params.product;
+    var query = {
+          name: {
+            $regex: product,
+            $options: 'i' //i: ignore case, m: multiline, etc
+          }
+        };
+    var suppliers;
+    var collection = db.get('products');
+    var collectionSuppliers= db.get('suppliers');
+    collectionSuppliers.find({},{},function(e,docs){
+            suppliers = docs;
+    });
+    collection.find(query ,{},function(e,docs){
+        res.render('editproduct', {
+            title : 'Edit Product',
+            "products" : docs,
+            "suppliers" : suppliers,
+            "success" : success
+        });
+    });
+    
+});
 
 
 /* GET Add New Product page. */
@@ -141,7 +168,13 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
 
     // Set our internal DB variable
     var db = req.db;
-
+    var collection = db.get('products');
+    var id;
+    collection.find({},{},function(e,docs){
+        console.log(doc[docs.length-1].productid);
+        id = docs[docs.length-1].productid + 1;
+        
+    });
     // Get our form values. These rely on the "name" attributes
     var name = req.body.name;
     var stock = parseInt(req.body.stock, 10);
@@ -149,11 +182,9 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
     var supplierName = req.body.supplier;
     var expiry = new Date(req.body.expiry);
 
-    // Set our collection
-    var collection = db.get('products');
-
     // Submit to the DB
     collection.insert({
+        "productid" : productID,
         "name" : name,
         "stock" : stock,
         "price" : price,
@@ -167,6 +198,47 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
         else {
             // And forward to success page
             res.redirect("/addproduct?success=1");
+        }
+    });
+});
+
+
+/* POST to Add New Product */
+router.post('/post/updateproduct', checkAuth, function(req, res) {
+
+    // Set our internal DB variable
+    var db = req.db;
+    var collection = db.get('products');
+
+    // Get our form values. These rely on the "name" attributes
+    var productid = req.body.productid;
+    var name = req.body.name;
+    var stock = parseInt(req.body.stock, 10);
+    var price = parseFloat(req.body.price, 10);
+    var supplierName = req.body.supplier;
+    var expiry = new Date(req.body.expiry);
+
+    var query = (
+        { productid: productid },
+           {
+              name: name,
+              stock: stock,
+              price: price,
+              supplierName: supplierName,
+              expiry: expiry
+           }
+        );
+    
+
+    // Submit to the DB
+    collection.update(query, function (err, doc) {
+        if (err) {
+            // If it failed, return error
+            res.redirect("/editproduct?success=0");
+        }
+        else {
+            // And forward to success page
+            res.redirect("/editproduct?success=1");
         }
     });
 });

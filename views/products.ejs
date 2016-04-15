@@ -17,7 +17,7 @@
                   </form>
                   <% if (products.length == 0){ %>
                   <h3>No Product Found !</h3>
-                  <% } else {%>
+                  <% } else { %>
         <table class="table pure-table">
             <thead>
                 <tr>
@@ -32,14 +32,14 @@
 
             <tbody>
             <% for (var i = 0; i < products.length; i++){ %>       
-                <tr>
-                    <td>MED00<%= i+1 %></td>
+                <tr onclick="location.href='/products/<%= products[i].name %>'">
+                    <td>MED<%= ("000" + products[i].productid).substr(-3) %></td>
                     <td><%= products[i].name %></td>
                     <td><%= products[i].stock %></td>
                     <td>&#8377 <%= products[i].price %></td>
                     <td><%= products[i].supplierName %></td>
                     <td><%= products[i].expiry.toDateString() %></td>
-                </tr>
+                </tr></a>
                 
             <% } %>
             </tbody>

@@ -181,6 +181,7 @@ a:hover {
 .pure-table tr:hover {
     background-color: #7ed077;
     color: white;
+    cursor: pointer;
 }
 .pure-table th {
     background-color: #4CAF50;

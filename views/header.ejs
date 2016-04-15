@@ -32,49 +32,6 @@
         		});	  
 			});
 
-			// Invoice autocomplete
-            $(function() {
-                
-                var productSource;
-                
-                $.get("/api/products", function(data){
-                	productSource = data;
-                });
-
-                $("td #productName").on("focus", function() {
-                    var itemrow = $(this).closest('tr');
-                    //console.log(parentRow);
-                    //itemrow.find("#productID").val(22);
-                    $(this).autocomplete({
-                            minLength: 0,
-                            source: productSource,
-                            focus: function(event, ui) {
-                                $(this).val(ui.item.label);
-                                return false;
-                            },
-                            select: function(event, ui) {
-                                itemrow.find("#productID").val(ui.item.label);
-                                itemrow.find("#productPrice").val(ui.item.price);
-                                $("#productQuantity").attr("max", ui.item.stock);
-                                $("#productQuantity").focus();
-                                return false;
-                            }
-                        })
-                        .autocomplete("instance")._renderItem = function(ul, item) {
-                            return $("<li>")
-                                .append("<a>" + item.label + "</a>")
-                                .appendTo(ul);
-                        };
-                });
-            });
-
-            // Add New Row on Invoice Page
-            $('#add-new-row').click(function() {
-                var newRow = '<tr id="invoice-row"><td><input class="form-control" type="text" placeholder="Product ID" id="productID"> </td><td><input class="form-control" type="text" placeholder="Product Name" id="productName"> </td><td><div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span><input class="form-control" placeholder="Price" id="productPrice"></div></td><td><input class="form-control" type="number" placeholder="Qty" id="productQuantity"> </td><td><input class="form-control" readonly id="productTotal"></td></tr>';
-                $('#invoice-body').append(newRow);
-            });
-
-		});
 		</script>
 
 </head>
