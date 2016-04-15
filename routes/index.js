@@ -4,7 +4,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 
 var router = express.Router();
-var auth_id = 0;
+var auth_id = '1234';
 
 /* Authenticates user on every link */
 function checkAuth(req, res, next) {
@@ -18,7 +18,6 @@ function checkAuth(req, res, next) {
     next();
   }
 }
-
 
 
 /* GET Login Page. */
@@ -59,6 +58,30 @@ router.get('/products', checkAuth, function(req, res, next) {
     });
     
 });
+
+/* Search Products Page. */
+router.get('/products/search', checkAuth, function(req, res, next) {
+    var db = req.db;
+    var keyword = req.query.keyword;
+    var query = {
+          name: {
+            $regex: keyword,
+            $options: 'i' //i: ignore case, m: multiline, etc
+          }
+        };
+
+    var collection = db.get('products');
+    
+    collection.find(query ,{},function(e,docs){
+        console.log(docs);
+        res.render('products', {
+            title : "Search Results",
+            "products" : docs,
+        });
+    });
+    
+});
+
 
 
 /* GET Add New Product page. */

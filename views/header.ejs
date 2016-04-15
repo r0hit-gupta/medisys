@@ -9,7 +9,8 @@
     <script>
 			// Get Medicine info via Ajax
 		$(document).ready(function(){
-			$("#medicine-search-go").click(function(){
+			$("#medicine-search-go").on('submit',function(e){
+				e.preventDefault();
 				var keyword = $("#medicine-search-input").val();
 				var url = "/api/scrape?keyword="+keyword.replace(" ", "-");
 				
