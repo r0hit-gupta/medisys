@@ -1,0 +1,48 @@
+<% include header %>
+
+<body>
+
+    <% include infobars %>
+
+    
+    <!-- ----------- CONTENT ------------- -->
+    <div class="content">
+    <div class="invoice-header">
+            <h3>Invoice Number : </h3>
+            <h3 align="right">Date : </h3>
+        </div>
+        <table class="table invoice-table">
+            <thead>
+                <tr>
+                    <th class="col-md-2">Product ID</th>
+                    <th class="col-md-5">Name</th>
+                    <th class="col-md-2">Price</th>
+                    <th class="col-md-1">Quantity</th>
+                    <th class="col-md-2">Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="invoice-body">
+                <tr id="invoice-row">
+                    <td>
+                        <input class="form-control" type="text" placeholder="Product ID" id="productID"> </td>
+                    <td>
+                        <input class="form-control" type="text" placeholder="Product Name" id="productName"> </td>
+                    <td>
+                        <div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span>
+                            <input class="form-control" placeholder="Price" id="productPrice">
+                        </div>
+                    </td>
+                    <td>
+                        <input class="form-control" type="number" placeholder="Qty" id="productQuantity"> </td>
+                    <td>
+                        <input class="form-control" readonly id="productTotal"> </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-success" id="add-new-row">Add New Item</button>
+       </div>
+</body>
+
+</html>

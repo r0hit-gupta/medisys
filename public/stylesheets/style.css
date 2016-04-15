@@ -330,3 +330,36 @@ a:hover {
     height: auto;
     margin-top: -50px;
 }
+
+
+/* ----------  INVOICES ---------- */
+
+.invoice-table {
+    border: 1px solid #ddd;
+    font-family: mangal;
+}
+
+.invoice-table th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+.invoice-table tr:hover {
+    background-color: #e3fce1;
+    color: white;
+}
+.invoice-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+.invoice-header {
+    width: 100%;
+    height: 50px;
+}
+
+.invoice-header h3{
+    display: inline-block;
+    width: 49%;
+    height: 100%;
+    margin: 0px;
+}

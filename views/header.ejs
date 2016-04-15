@@ -3,12 +3,16 @@
 <head>
     <title><%= title %></title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="/icons/css/icons.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
     <script>
-			// Get Medicine info via Ajax
+			
 		$(document).ready(function(){
+			
+			// Get Medicine info via Ajax
 			$("#medicine-search-go").on('submit',function(e){
 				e.preventDefault();
 				var keyword = $("#medicine-search-input").val();
@@ -20,19 +24,57 @@
 						$('.medicine-title-scrape').text(keyword + " :");
 						$('.medicine-info-scrape').html("<p style='text-align:left;'>"+data.description+"</p>");
 						$('<img src="http:'+ data.image +'"></img>').appendTo($('.medicine-info-scrape'));
-
 					}
 					else {
 						$('.medicine-title-scrape').text("");
 						$('.medicine-info-scrape').html('<p align="center" style="width:100%;"><em>No Medicine Found </em></p>');
 					}
-            		
-        		});
-				  
+        		});	  
+			});
 
-					});
+			// Invoice autocomplete
+            $(function() {
+                
+                var productSource;
+                
+                $.get("/api/products", function(data){
+                	productSource = data;
+                });
 
-				});
+                $("td #productName").on("focus", function() {
+                    var itemrow = $(this).closest('tr');
+                    //console.log(parentRow);
+                    //itemrow.find("#productID").val(22);
+                    $(this).autocomplete({
+                            minLength: 0,
+                            source: productSource,
+                            focus: function(event, ui) {
+                                $(this).val(ui.item.label);
+                                return false;
+                            },
+                            select: function(event, ui) {
+                                itemrow.find("#productID").val(ui.item.label);
+                                itemrow.find("#productPrice").val(ui.item.price);
+                                $("#productQuantity").attr("max", ui.item.stock);
+                                $("#productQuantity").focus();
+                                return false;
+                            }
+                        })
+                        .autocomplete("instance")._renderItem = function(ul, item) {
+                            return $("<li>")
+                                .append("<a>" + item.label + "</a>")
+                                .appendTo(ul);
+                        };
+                });
+            });
+
+            // Add New Row on Invoice Page
+            $('#add-new-row').click(function() {
+                var newRow = '<tr id="invoice-row"><td><input class="form-control" type="text" placeholder="Product ID" id="productID"> </td><td><input class="form-control" type="text" placeholder="Product Name" id="productName"> </td><td><div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span><input class="form-control" placeholder="Price" id="productPrice"></div></td><td><input class="form-control" type="number" placeholder="Qty" id="productQuantity"> </td><td><input class="form-control" readonly id="productTotal"></td></tr>';
+                $('#invoice-body').append(newRow);
+            });
+
+		});
 		</script>
 
 </head>

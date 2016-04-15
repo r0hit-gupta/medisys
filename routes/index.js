@@ -75,7 +75,7 @@ router.get('/products/search', checkAuth, function(req, res, next) {
     collection.find(query ,{},function(e,docs){
         console.log(docs);
         res.render('products', {
-            title : "Search Results",
+            title : 'Search Results for "'+keyword+'"',
             "products" : docs,
         });
     });
@@ -98,6 +98,22 @@ router.get('/addproduct', checkAuth, function(req, res) {
     });
 
 });
+
+
+/* GET Invoices Page. */
+router.get('/invoices', checkAuth, function(req, res, next) {
+    var db = req.db;
+    var collection = db.get('products');
+    collection.find({},{},function(e,docs){
+        //res.send(docs);
+        res.render('invoices', {
+            title : "invoices",
+            "products" : docs,
+        }); 
+    });
+    
+});
+
 
 /* POST login details */
 router.post('/post/login', function (req, res) {
@@ -187,5 +203,25 @@ router.get('/api/scrape', checkAuth, function(req, res){
     });
 });
 
+router.get('/api/products', checkAuth, function(req, res){
+    var db = req.db;
+    var collection = db.get('products');
+    collection.find({},{},function(e,docs){
+
+        // function to change "name" in json to "label"
+        function changeData(data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].hasOwnProperty("name")) {
+                        data[i]["label"] = data[i]["name"];
+                        delete data[i]["name"];
+                    }
+                }
+                return data;
+        }
+
+        docs = changeData(docs);
+        res.send(docs);
+        });
+});
 
 module.exports = router;
