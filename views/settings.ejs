@@ -4,9 +4,47 @@
 
     <% include infobars %>
 
-   <div class="content" align="center">
-   		<i class="fa fa-refresh fa-5x" ></i>
-   		<span id="placeholder"><h3>Oops! Try Reloading The Page !<h3></span>
-   </div>
+<div class="content">
+	<% if (success == 1) { %>
+	  <div class="alert alert-success" role="alert">Settings have been updated successfully !</div>
+	<% } %>
+	<% if (success == 0) { %>
+	  <div class="alert alert-danger" role="alert">Error !</div>
+	<% } %>
+
+	<form class="form-horizontal" action="/post/settings" method="post">
+  
+    
+  <div class="form-group">
+    <label for="stock" class="col-sm-2 control-label">Set The Low Stock Warning Quantity : </label>
+    <div class="col-sm-2">
+      <input type="number" class="form-control" id="stock" name="stock" min="1" required value="<%= settings[0].stockAlert %>" placeholder="Qty">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="expiry" class="col-sm-2 control-label">Set The Difference for Expiry Warning in Days :</label>
+    <div class="col-sm-2">
+      <input type="number" class="form-control" id="expiry" min="1" value="<%= settings[0].expiryAlert %>" placeholder="No. of Days" name="expiry" required>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="notes" class="col-sm-2 control-label">Enter Notes To Display on the Dashboard : </label>
+    <div class="col-sm-4">
+      <textarea class="form-control" id="notes" placeholder="Notes to Display on the Dashboard..." name="notes" style="height: 200px;"><%= settings[0].adminNotes %></textarea>
+    </div>
+  </div>
+ 
+ 
+  <div class="form-group" style="margin-top: 20px;">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-success">SAVE SETTINGS</button>
+    </div>
+  </div>
+
+</form>
+
+</div>
 </body>
 </html>

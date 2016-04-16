@@ -44,23 +44,36 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
         return remain;
     }
 
+    var stockAlert, expiryAlert, adminNotes;
 	var db = req.db;
     var collection = db.get('products');
+    var settingsdb = db.get('settings');
+
+    settingsdb.find({},{},function(e,docs){
+        stockWarning = docs[0].stockAlert + 1; 
+        expiryWarning = docs[0].expiryAlert; 
+        adminNotes = docs[0].adminNotes;    
+    });
+
+
     var expiryProducts = [];
 
     collection.find({},{},function(e,docs){
         for (var i = 0; i < docs.length; i++){
-            if (checkExpiry(docs[i].expiry) < 90) {
+            if (checkExpiry(docs[i].expiry) < expiryWarning ) {
                 expiryProducts.push(docs[i]);
             }
         }
-        //console.log(expiryProducts);
+    
     });
-    collection.find({ stock: {$lt : 10}},{},function(e,docs){
+    console.log(stockWarning);
+
+    collection.find({ stock: {$lt : stockWarning }},{},function(e,docs){
         res.render('dashboard', {
-            title : "dashboard",
+            "title" : "Dashboard",
             "products" : docs,
-            "expiryProducts" : expiryProducts
+            "expiryProducts" : expiryProducts,
+            "adminNotes" : adminNotes
         });
     });
     
@@ -68,12 +81,16 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
 
 /* GET Settings Page. */
 router.get('/settings', checkAuth, function(req, res, next) {
+    var success = req.query.success;
+    
     var db = req.db;
-    var collection = db.get('products');
+
+    var collection = db.get('settings');
     collection.find({},{},function(e,docs){
         res.render('settings', {
-            title : "settings",
+            title : "Settings",
             "settings" : docs,
+            "success" : success
         });
     });
     
@@ -85,7 +102,7 @@ router.get('/products', checkAuth, function(req, res, next) {
     var collection = db.get('products');
     collection.find({},{},function(e,docs){
         res.render('products', {
-            title : "products",
+            title : "Products",
             "products" : docs,
         });
     });
@@ -168,7 +185,7 @@ router.get('/invoices', checkAuth, function(req, res, next) {
     collection.find({},{},function(e,docs){
         //res.send(docs);
         res.render('invoices', {
-            title : "invoices",
+            title : "Invoices",
             "products" : docs,
         }); 
     });
@@ -285,14 +302,40 @@ router.post('/post/updateproduct', checkAuth, function(req, res) {
     }
 });
 
+
+/* POST Settings */
+router.post('/post/settings', checkAuth, function(req, res) {
+
+    // Set our internal DB variable
+    var db = req.db;
+    var collection = db.get('settings');
+
+    // Get our form values. These rely on the "name" attributes
+    var stockAlert = parseInt(req.body.stock, 10);
+    var expiryAlert = parseInt(req.body.expiry, 10);
+    var adminNotes = req.body.notes;
+        // Update in the DB
+    collection.update({ _id : "57127759e4b065a8c4d71007" }, { $set: {"stockAlert": stockAlert,
+    "expiryAlert": expiryAlert,
+    "adminNotes": adminNotes } }, function (err, doc) {
+        if (err) {
+            res.redirect("/settings?success=0");
+        }
+        else {
+            res.redirect("/settings?success=1");
+        }
+    });
+    
+});
+
+
+
 /* POST Medicine Search Scraper */
 router.get('/api/scrape', checkAuth, function(req, res){
 
-    //var title = req.body.keyword;
-    //var keyword = title.replace(" ", "-");
-    var keyword = req.query.keyword; //"aspirin";
+    var keyword = req.query.keyword; 
     var url = 'http://www.drugs.com/' + keyword + '.html';
-    //var description;
+
     var json = {"description" : "", "image": ""};
 
     request(url, function(error, response, html){
@@ -317,6 +360,7 @@ router.get('/api/scrape', checkAuth, function(req, res){
     });
 });
 
+/* Autocomplete Invoice */
 router.get('/api/products', checkAuth, function(req, res){
     var db = req.db;
     var collection = db.get('products');
