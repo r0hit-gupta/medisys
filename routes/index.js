@@ -66,6 +66,19 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
     
 });
 
+/* GET Settings Page. */
+router.get('/settings', checkAuth, function(req, res, next) {
+    var db = req.db;
+    var collection = db.get('products');
+    collection.find({},{},function(e,docs){
+        res.render('settings', {
+            title : "settings",
+            "settings" : docs,
+        });
+    });
+    
+});
+
 /* GET Products Page. */
 router.get('/products', checkAuth, function(req, res, next) {
     var db = req.db;
