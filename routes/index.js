@@ -238,36 +238,38 @@ router.post('/post/updateproduct', checkAuth, function(req, res) {
     var price = parseFloat(req.body.price, 10);
     var supplierName = req.body.supplier;
     var expiry = new Date(req.body.expiry);
-
-    var query = (
-        { productid: productid },
-           {
-              name: name,
-              stock: stock,
-              price: price,
-              supplierName: supplierName,
-              expiry: expiry
-           }
-        );
     
-    console.log(query);
-    // Submit to the DB
-    collection.update({ "productid": productid }, { $set: {"name": name,
-    "stock": stock,
-    "price": price,
-    "supplierName": supplierName,
-    "expiry": expiry} }, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            //res.redirect("/products/"+name+"?success=0");
-            res.redirect("/editproduct?edit="+name+"&success=0");
-        }
-        else {
-            // And forward to success page
-            //res.redirect("/products/"+name+"?success=1");
-            res.redirect("/editproduct?edit="+name+"&success=1");
-        }
-    });
+    var deleteProduct = parseInt(req.body.delete, 10);
+
+    if (deleteProduct == 1) {
+        collection.remove({ "productid": productid }, function (err) {
+           if (err) {
+                res.redirect("/editproduct?edit="+name+"&success=0");
+            }
+            else {
+                res.redirect("/products");
+            }
+});
+    }
+    else {
+        // Update in the DB
+        collection.update({ "productid": productid }, { $set: {"name": name,
+        "stock": stock,
+        "price": price,
+        "supplierName": supplierName,
+        "expiry": expiry} }, function (err, doc) {
+            if (err) {
+                // If it failed, return error
+                //res.redirect("/products/"+name+"?success=0");
+                res.redirect("/editproduct?edit="+name+"&success=0");
+            }
+            else {
+                // And forward to success page
+                //res.redirect("/products/"+name+"?success=1");
+                res.redirect("/editproduct?edit="+name+"&success=1");
+            }
+        });
+    }
 });
 
 /* POST Medicine Search Scraper */
