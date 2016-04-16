@@ -41,10 +41,12 @@
     <label for="supplier" class="col-sm-2 control-label">Supplier</label>
     <div class="col-sm-3">
       <select class="form-control" id="supplier" name="supplier">
-      <option selected value="<%= products[0].suppliersName %>"><%= products[0].suppliersName %></option>
         <% for (var i = 0; i < suppliers.length; i++){ %>
-        <option value="<%= suppliers[i].name %>"><%= suppliers[i].name %></option>
-        <% } %>
+           <% if (products[0].supplierName == suppliers[i].name) { %>
+              <option selected value="<%= suppliers[i].name %>"><%= suppliers[i].name %></option>
+          <% } else { %>
+              <option value="<%= suppliers[i].name %>"><%= suppliers[i].name %></option>
+        <% } } %>
       </select>
     </div>
   </div>
@@ -52,7 +54,17 @@
   <div class="form-group">
     <label for="expiry" class="col-sm-2 control-label">Expiry Date</label>
     <div class="col-sm-3">
-      <input type="date" class="form-control" id="expiry" placeholder="YYYY-MM-DD" name="expiry" required >
+      <input type="date" class="form-control" id="expiry" placeholder="YYYY-MM-DD" name="expiry" required value="<% function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+} %><%= formatDate(products[0].expiry) %>">
     </div>
   </div>
 

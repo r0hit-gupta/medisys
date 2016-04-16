@@ -313,6 +313,19 @@ a:hover {
 #widget2 .widget-heading {
     background: #16a085;
 }
+#widget3 {
+    border-color: #63393E;
+}
+#widget3 .widget-heading {
+    background: #63393E;
+}
+
+#widget4 {
+    border-color: #2c3e50;
+}
+#widget4 .widget-heading {
+    background: #2c3e50;
+}
 
 
 /* ---------  ONLINE MEDICINE SEARCH ----------- */

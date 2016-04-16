@@ -8,30 +8,4 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="/icons/css/icons.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
-    <script>
-			
-		$(document).ready(function(){
-			
-			// Get Medicine info via Ajax
-			$("#medicine-search-go").on('submit',function(e){
-				e.preventDefault();
-				var keyword = $("#medicine-search-input").val();
-				var url = "/api/scrape?keyword="+keyword.replace(" ", "-");
-				
-				$.getJSON(url, function(data){
-					if (data.description != ''){
-						console.log(data.image);
-						$('.medicine-title-scrape').text(keyword + " :");
-						$('.medicine-info-scrape').html("<p style='text-align:left;'>"+data.description+"</p>");
-						$('<img src="http:'+ data.image +'"></img>').appendTo($('.medicine-info-scrape'));
-					}
-					else {
-						$('.medicine-title-scrape').text("");
-						$('.medicine-info-scrape').html('<p align="center" style="width:100%;"><em>No Medicine Found </em></p>');
-					}
-        		});	  
-			});
-
-		</script>
-
 </head>

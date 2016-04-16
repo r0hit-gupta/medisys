@@ -1,4 +1,5 @@
 <% include header %>
+
 <body>
 
     <% include infobars %>
@@ -20,7 +21,7 @@
             		<tbody>
     					<% for (var i = 0; i < products.length; i++){ %> 
 		                <tr>
-		                    <td>MED023</td>
+		                    <td><%= "MED" + ("000" + products[i].productid).substr(-3) %></td>
 		                    <td><%= products[i].name %></td>
 		                    <td><%= products[i].stock %></td>
 		                    <td><%= products[i].supplierName %></td>
@@ -55,11 +56,69 @@
 			</div> 
 		</div>
 		<div class="widget" id="widget3">
-			
+		<div class="widget-heading">NOTES FROM THE ADMIN</div>
+    		<div class="widget-content" align="center"></div>
+
 		</div>
 		<div class="widget" id="widget4">
-			
+			<!-------------- EXPIRING PRODUCTS ---------------->
+			<div class="widget-heading">PRODUCTS EXPIRING IN 3 MONTHS</div>
+    		<div class="widget-content" align="center">
+    		<% if (expiryProducts.length > 0) { %>
+    			<table class="table table-striped">
+    				<thead>
+	                <tr>
+	                    <th>Product ID</th>
+	                    <th>Name</th>
+	                    <th>Stock</th>
+	                    <th>Expiry</th>
+	                </tr>
+            		</thead>
+            		<tbody>
+    					<% for (var i = 0; i < expiryProducts.length; i++){ %> 
+		                <tr>
+		                    <td><%= "MED" + ("000" + expiryProducts[i].productid).substr(-3) %></td>
+		                    <td><%= expiryProducts[i].name %></td>
+		                    <td><%= expiryProducts[i].stock %></td>
+		                    <td><%= (expiryProducts[i].expiry.toDateString()).substr(4) %></td>
+		                </tr>
+
+		                <% } %>
+	                </tbody>
+	                </table>
+            <% } else {%>
+            	<i class="fa fa-thumbs-up fa-5x" id="placeholder"></i>
+            	<span id="placeholder"><h3>Your medicines are going pretty good !<h3></span>
+            <% } %>
+								
+    		</div>
+
 		</div>    	
     </div>
+<script>
+			
+		$(document).ready(function(){
+			
+			// Get Medicine info via Ajax
+			$("#medicine-search-go").on('submit',function(e){
+				e.preventDefault();
+				var keyword = $("#medicine-search-input").val();
+				var url = "/api/scrape?keyword="+keyword.replace(" ", "-");
+				
+				$.getJSON(url, function(data){
+					if (data.description != ''){
+						console.log(data.image);
+						$('.medicine-title-scrape').text(keyword + " :");
+						$('.medicine-info-scrape').html("<p style='text-align:left;'>"+data.description+"</p>");
+						$('<img src="http:'+ data.image +'"></img>').appendTo($('.medicine-info-scrape'));
+					}
+					else {
+						$('.medicine-title-scrape').text("");
+						$('.medicine-info-scrape').html('<p align="center" style="width:100%;"><em>No Medicine Found </em></p>');
+					}
+        		});	  
+			});
+});
+		</script>
 </body>
 </html>

@@ -38,7 +38,7 @@
                     <td><%= products[i].stock %></td>
                     <td>&#8377 <%= products[i].price %></td>
                     <td><%= products[i].supplierName %></td>
-                    <td><%= products[i].expiry.toDateString() %></td>
+                    <td><%= (products[i].expiry.toDateString()).substr(4) %></td>
                 </tr></a>
                 
             <% } %>

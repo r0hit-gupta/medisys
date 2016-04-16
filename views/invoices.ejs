@@ -1,6 +1,7 @@
 <% include header %>
 <script>
             // Invoice autocomplete
+        $(document).ready(function(){
             $(function() {
                 
                 var productSource;
@@ -21,9 +22,9 @@
                                 return false;
                             },
                             select: function(event, ui) {
-                                itemrow.find("#productID").val(ui.item.label);
+                                itemrow.find("#productID").val("MED" + ("000" + ui.item.productid).substr(-3));
                                 itemrow.find("#productPrice").val(ui.item.price);
-                                $("#productQuantity").attr("max", ui.item.stock);
+                                $("#productQuantity").attr({"max":ui.item.stock, "placeholder":"In Stock : "+ui.item.stock});
                                 $("#productQuantity").focus();
                                 return false;
                             }
@@ -60,9 +61,9 @@
             <thead>
                 <tr>
                     <th class="col-md-2">Product ID</th>
-                    <th class="col-md-5">Name</th>
+                    <th class="col-md-4">Name</th>
                     <th class="col-md-2">Price</th>
-                    <th class="col-md-1">Quantity</th>
+                    <th class="col-md-2">Quantity</th>
                     <th class="col-md-2">Total</th>
                 </tr>
             </thead>

@@ -35,12 +35,32 @@ router.get('/', function(req, res, next) {
 
 /* GET Dashboard. */
 router.get('/dashboard', checkAuth, function(req, res, next) {
+    
+    function checkExpiry(date){
+        var today = Date.now();
+        var expiry = new Date(date);
+        var remain = expiry - today;
+        remain = parseInt(((((remain/1000)/60)/60)/24));
+        return remain;
+    }
+
 	var db = req.db;
     var collection = db.get('products');
+    var expiryProducts = [];
+
+    collection.find({},{},function(e,docs){
+        for (var i = 0; i < docs.length; i++){
+            if (checkExpiry(docs[i].expiry) < 90) {
+                expiryProducts.push(docs[i]);
+            }
+        }
+        //console.log(expiryProducts);
+    });
     collection.find({ stock: {$lt : 10}},{},function(e,docs){
         res.render('dashboard', {
             title : "dashboard",
             "products" : docs,
+            "expiryProducts" : expiryProducts
         });
     });
     
@@ -85,8 +105,9 @@ router.get('/products/search', checkAuth, function(req, res, next) {
 /* Edit Products Page. */
 router.get('/products/:product', checkAuth, function(req, res, next) {
     var success = req.query.success;
-    var db = req.db;
     var product = req.params.product;
+
+    var db = req.db;
     var query = {
           name: {
             $regex: product,
@@ -171,10 +192,10 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
     var collection = db.get('products');
     var id;
     collection.find({},{},function(e,docs){
-        console.log(doc[docs.length-1].productid);
-        id = docs[docs.length-1].productid + 1;
+        //console.log(docs[docs.length-1].productid);
+        id = (docs[docs.length-1].productid + 1);
         
-    });
+    
     // Get our form values. These rely on the "name" attributes
     var name = req.body.name;
     var stock = parseInt(req.body.stock, 10);
@@ -184,7 +205,7 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
 
     // Submit to the DB
     collection.insert({
-        "productid" : productID,
+        "productid" : id,
         "name" : name,
         "stock" : stock,
         "price" : price,
@@ -201,7 +222,7 @@ router.post('/post/newproduct', checkAuth, function(req, res) {
         }
     });
 });
-
+});
 
 /* POST to Add New Product */
 router.post('/post/updateproduct', checkAuth, function(req, res) {
@@ -234,11 +255,11 @@ router.post('/post/updateproduct', checkAuth, function(req, res) {
     collection.update(query, function (err, doc) {
         if (err) {
             // If it failed, return error
-            res.redirect("/editproduct?success=0");
+            res.redirect("/products/"+name+"?success=0");
         }
         else {
             // And forward to success page
-            res.redirect("/editproduct?success=1");
+            res.redirect("/products/"+name+"?success=1");
         }
     });
 });
