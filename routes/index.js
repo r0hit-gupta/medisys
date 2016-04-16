@@ -44,7 +44,7 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
         return remain;
     }
 
-    var stockAlert, expiryAlert, adminNotes;
+    var stockWarning, expiryWarning, adminNotes;
 	var db = req.db;
     var collection = db.get('products');
     var settingsdb = db.get('settings');
@@ -53,7 +53,7 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
         stockWarning = docs[0].stockAlert + 1; 
         expiryWarning = docs[0].expiryAlert; 
         adminNotes = docs[0].adminNotes;    
-    });
+    
 
 
     var expiryProducts = [];
@@ -65,7 +65,7 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
             }
         }
     
-    });
+    
     console.log(stockWarning);
 
     collection.find({ stock: {$lt : stockWarning }},{},function(e,docs){
@@ -76,7 +76,8 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
             "adminNotes" : adminNotes
         });
     });
-    
+    });
+    });
 });
 
 /* GET Settings Page. */
@@ -149,7 +150,7 @@ router.get('/editproduct', checkAuth, function(req, res, next) {
     var collectionSuppliers= db.get('suppliers');
     collectionSuppliers.find({},{},function(e,docs){
             suppliers = docs;
-    });
+    
     collection.find(query ,{},function(e,docs){
         res.render('editproduct', {
             title : 'Edit Product',
@@ -158,7 +159,7 @@ router.get('/editproduct', checkAuth, function(req, res, next) {
             "success" : success
         });
     });
-    
+    });
 });
 
 
