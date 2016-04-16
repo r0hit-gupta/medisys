@@ -32,7 +32,7 @@
 
             <tbody>
             <% for (var i = 0; i < products.length; i++){ %>       
-                <tr onclick="location.href='/products/<%= products[i].name %>'">
+                <tr onclick="location.href='/editproduct?edit=<%= products[i].name %>'">
                     <td>MED<%= ("000" + products[i].productid).substr(-3) %></td>
                     <td><%= products[i].name %></td>
                     <td><%= products[i].stock %></td>

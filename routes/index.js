@@ -103,9 +103,9 @@ router.get('/products/search', checkAuth, function(req, res, next) {
 });
 
 /* Edit Products Page. */
-router.get('/products/:product', checkAuth, function(req, res, next) {
+router.get('/editproduct', checkAuth, function(req, res, next) {
     var success = req.query.success;
-    var product = req.params.product;
+    var product = req.query.edit;
 
     var db = req.db;
     var query = {
@@ -232,7 +232,7 @@ router.post('/post/updateproduct', checkAuth, function(req, res) {
     var collection = db.get('products');
 
     // Get our form values. These rely on the "name" attributes
-    var productid = req.body.productid;
+    var productid = parseInt(req.body.productid, 10);
     var name = req.body.name;
     var stock = parseInt(req.body.stock, 10);
     var price = parseFloat(req.body.price, 10);
@@ -250,16 +250,22 @@ router.post('/post/updateproduct', checkAuth, function(req, res) {
            }
         );
     
-
+    console.log(query);
     // Submit to the DB
-    collection.update(query, function (err, doc) {
+    collection.update({ "productid": productid }, { $set: {"name": name,
+    "stock": stock,
+    "price": price,
+    "supplierName": supplierName,
+    "expiry": expiry} }, function (err, doc) {
         if (err) {
             // If it failed, return error
-            res.redirect("/products/"+name+"?success=0");
+            //res.redirect("/products/"+name+"?success=0");
+            res.redirect("/editproduct?edit="+name+"&success=0");
         }
         else {
             // And forward to success page
-            res.redirect("/products/"+name+"?success=1");
+            //res.redirect("/products/"+name+"?success=1");
+            res.redirect("/editproduct?edit="+name+"&success=1");
         }
     });
 });
