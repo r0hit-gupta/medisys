@@ -377,3 +377,8 @@ a:hover {
     height: 100%;
     margin: 0px;
 }
+
+.delete-invoice-row:hover {
+    background-color: #E01931 !important;
+    cursor: pointer;
+}

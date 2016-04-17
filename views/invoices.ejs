@@ -1,50 +1,78 @@
 <% include header %>
 <script>
             // Invoice autocomplete
-        $(document).ready(function(){
-            $(function() {
+               $(document).ready(function(){
                 
-                var productSource;
+                var i = 2;
+                var productSource;         
                 
-                $.get("/api/products", function(data){
-                    productSource = data;
-                });
-
-                $("td #productName").on("focus", function() {
-                    var itemrow = $(this).closest('tr');
-                    //console.log(parentRow);
-                    //itemrow.find("#productID").val(22);
-                    $(this).autocomplete({
-                            minLength: 0,
+                var autocomplete_options = {
                             source: productSource,
+                            minLength: 0,
+                            //source: productSource,
                             focus: function(event, ui) {
                                 $(this).val(ui.item.label);
                                 return false;
                             },
                             select: function(event, ui) {
+                                var itemrow = $(this).closest('tr');
                                 itemrow.find("#productID").val("MED" + ("000" + ui.item.productid).substr(-3));
                                 itemrow.find("#productPrice").val(ui.item.price);
-                                $("#productQuantity").attr({"max":ui.item.stock, "placeholder":"In Stock : "+ui.item.stock});
-                                $("#productQuantity").focus();
+                                itemrow.find("#productQuantity").attr({"max":ui.item.stock, "placeholder":"In Stock : "+ui.item.stock});
+                                itemrow.find("#productQuantity").focus();
                                 return false;
                             }
-                        })
-                        .autocomplete("instance")._renderItem = function(ul, item) {
+                        };
+
+                $.get("/api/products", function(data){
+                    productSource = data;
+                });
+   
+
+
+                $("#productName1").on("focus", function() {
+                    console.log(true);
+                    $(this).autocomplete({source: productSource}, autocomplete_options)
+                    .autocomplete("instance")._renderItem = function(ul, item) {
                             return $("<li>")
                                 .append("<a>" + item.label + "</a>")
                                 .appendTo(ul);
                         };
                 });
-            });
-
+          
             // Add New Row on Invoice Page
             $('#add-new-row').click(function() {
-                var newRow = '<tr id="invoice-row"><td><input class="form-control" type="text" placeholder="Product ID" id="productID"> </td><td><input class="form-control" type="text" placeholder="Product Name" id="productName"> </td><td><div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span><input class="form-control" placeholder="Price" id="productPrice"></div></td><td><input class="form-control" type="number" placeholder="Qty" id="productQuantity"> </td><td><input class="form-control" readonly id="productTotal"></td></tr>';
+                var newRow = ('<tr id="invoice-row"><td><input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid[]"> </td><td><input required class="form-control" type="text" placeholder="Product Name" id="productName'+i+'" name="productname[]"> </td><td><div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span><input required class="form-control" placeholder="Price" id="productPrice" name="productprice[]"></div></td><td><input required class="form-control" type="number" placeholder="Qty" id="productQuantity" name="productquantity[]"> </td><td><input required class="form-control" readonly id="productTotal" name="producttotal[]"> </td></tr>');
                 $('#invoice-body').append(newRow);
+                $('#productName'+i).autocomplete({source: productSource},autocomplete_options);
+                i++;
             });
 
-        });
+            /* $('#delete-row').click(function() {
 
+                var state = $('#delete-row').val();
+                
+                if (state == 0){
+                    $('#delete-row').val(1);
+                    $('#add-new-row').hide();
+                    $('#invoice-body tr').toggleClass("delete-invoice-row");
+                    $('.delete-invoice-row').click(function(){
+                        $(this).remove();
+                        $('#delete-row').val(0);
+                        $('#add-new-row').show();
+                        $('#invoice-body tr').removeClass("delete-invoice-row");
+
+                    });
+                }
+                else {
+                    $('#delete-row').val(0);
+                    $('#invoice-body tr').removeClass("delete-invoice-row");
+                    $('#add-new-row').show();
+                }
+                
+            }); */
+
+        });
 </script>
 <body>
 
@@ -71,23 +99,24 @@
             <tbody id="invoice-body">
                 <tr id="invoice-row">
                     <td>
-                        <input class="form-control" type="text" placeholder="Product ID" id="productID"> </td>
+                        <input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid[]"> </td>
                     <td>
-                        <input class="form-control" type="text" placeholder="Product Name" id="productName"> </td>
+                        <input required class="form-control" type="text" placeholder="Product Name" id="productName1" name="productname[]"> </td>
                     <td>
                         <div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span>
-                            <input class="form-control" placeholder="Price" id="productPrice">
+                            <input required class="form-control" placeholder="Price" id="productPrice" name="productprice[]">
                         </div>
                     </td>
                     <td>
-                        <input class="form-control" type="number" placeholder="Qty" id="productQuantity"> </td>
+                        <input required class="form-control" type="number" placeholder="Qty" id="productQuantity" name="productquantity[]"> </td>
                     <td>
-                        <input class="form-control" readonly id="productTotal"> </td>
+                        <input required class="form-control" readonly id="productTotal" name="producttotal[]"> </td>
                 </tr>
 
             </tbody>
         </table>
-        <button type="button" class="btn btn-success" id="add-new-row">Add New Item</button>
+        <button type="button" class="btn btn-success" id="add-new-row">ADD NEW ITEM</button>
+        <button type="submit" class="btn btn-danger" id="delete-row" value="0" style="margin-left: 20px;">DELETE ITEM</button>
        </div>
 </body>
 
