@@ -382,3 +382,24 @@ a:hover {
     background-color: #E01931 !important;
     cursor: pointer;
 }
+
+#productTotal {
+    text-align: right;
+}
+
+.invoice-totals {
+}
+.invoice-subtotal {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+#invoice-tax {
+    width: 50%;
+    margin: 10px 0px;
+}
+.invoice-grandtotal {
+    font-size: 25px;
+    
+}
+

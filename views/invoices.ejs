@@ -1,123 +1,178 @@
 <% include header %>
-<script>
-            // Invoice autocomplete
-               $(document).ready(function(){
-                
-                var i = 2;
-                var productSource;         
-                
-                var autocomplete_options = {
-                            source: productSource,
-                            minLength: 0,
-                            //source: productSource,
-                            focus: function(event, ui) {
-                                $(this).val(ui.item.label);
-                                return false;
-                            },
-                            select: function(event, ui) {
-                                var itemrow = $(this).closest('tr');
-                                itemrow.find("#productID").val("MED" + ("000" + ui.item.productid).substr(-3));
-                                itemrow.find("#productPrice").val(ui.item.price);
-                                itemrow.find("#productQuantity").attr({"max":ui.item.stock, "placeholder":"In Stock : "+ui.item.stock});
-                                itemrow.find("#productQuantity").focus();
-                                return false;
-                            }
-                        };
+    <script>
+        // Invoice autocomplete
+        var subtotal = 0;
+        var itemtotal = 0;
+        function calculateTotal(src) {
+            
+            var row = $(src).closest('tr');
+            var price = row.find('#productPrice').val();
+            var qty = row.find('#productQuantity').val();
+            itemtotal = parseFloat(price * qty).toFixed(2); 
+            row.find('#productTotal').val(itemtotal);
+        }
+        
+        function subTotal(){
+            
+            $('tr').each(function(){
+                var temp = $(this).find('#productTotal').val();
+                if (temp) {
+                subtotal += parseFloat(temp);
+            }
+            });
+            $(".invoice-subtotal").html("Subtotal : &#8377 " + subtotal.toFixed(2));
 
-                $.get("/api/products", function(data){
-                    productSource = data;
-                });
-   
+        }
+
+        function grandTotal(){
+            var grandTotal = subtotal;
+            var vat = parseFloat($("#invoice-tax").val());
+            if (vat > 0) {
+                grandTotal = grandTotal + ((vat/100)*grandTotal);
+            }
+            $(".invoice-grandtotal").html("Grand total : &#8377 " + grandTotal.toFixed(2));
+        }
+
+        $(document).ready(function() {
 
 
-                $("#productName1").on("focus", function() {
-                    console.log(true);
-                    $(this).autocomplete({source: productSource}, autocomplete_options)
+            $('#invoice-body').on('change', 'input', function() {
+                calculateTotal(this);
+                subTotal();
+                grandTotal();
+            });
+
+            var i = 2;
+            var productSource;
+
+            var autocomplete_options = {
+                source: productSource,
+                minLength: 0,
+                //source: productSource,
+                focus: function(event, ui) {
+                    $(this).val(ui.item.label);
+                    return false;
+                },
+                select: function(event, ui) {
+                    var itemrow = $(this).closest('tr');
+                    itemrow.find("#productID").val("MED" + ("000" + ui.item.productid).substr(-3));
+                    itemrow.find("#productPrice").val(ui.item.price);
+                    itemrow.find("#productQuantity").attr({
+                        "max": ui.item.stock,
+                        "placeholder": "In Stock : " + ui.item.stock
+                    });
+                    itemrow.find("#productTotal").val(0);
+                    itemrow.find("#productQuantity").focus();
+                    return false;
+                }
+            };
+
+            $.get("/api/products", function(data) {
+                productSource = data;
+            });
+
+
+
+            $("#productName1").on("focus", function() {
+                $(this).autocomplete({
+                        source: productSource
+                    }, autocomplete_options)
                     .autocomplete("instance")._renderItem = function(ul, item) {
-                            return $("<li>")
-                                .append("<a>" + item.label + "</a>")
-                                .appendTo(ul);
-                        };
-                });
-          
+                        return $("<li>")
+                            .append("<a>" + item.label + "</a>")
+                            .appendTo(ul);
+                    };
+            });
+
             // Add New Row on Invoice Page
             $('#add-new-row').click(function() {
-                var newRow = ('<tr id="invoice-row"><td><input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid[]"> </td><td><input required class="form-control" type="text" placeholder="Product Name" id="productName'+i+'" name="productname[]"> </td><td><div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span><input required class="form-control" placeholder="Price" id="productPrice" name="productprice[]"></div></td><td><input required class="form-control" type="number" placeholder="Qty" id="productQuantity" name="productquantity[]"> </td><td><input required class="form-control" readonly id="productTotal" name="producttotal[]"> </td></tr>');
+                var newRow = ('<tr id="invoice-row"><td><input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid[]"> </td><td><input required class="form-control" type="text" placeholder="Product Name" id="productName' + i + '" name="productname[]"> </td><td><div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span><input required class="form-control" placeholder="Price" id="productPrice" name="productprice[]"></div></td><td><input required class="form-control" type="number" placeholder="Qty" id="productQuantity" name="productquantity[]"> </td><td><input required class="form-control" readonly id="productTotal" name="producttotal[]"> </td></tr>');
                 $('#invoice-body').append(newRow);
-                $('#productName'+i).autocomplete({source: productSource},autocomplete_options);
+                $('#productName' + i).autocomplete({
+                    source: productSource
+                }, autocomplete_options);
                 i++;
             });
 
-            /* $('#delete-row').click(function() {
+            var state = 0;
 
-                var state = $('#delete-row').val();
-                
-                if (state == 0){
-                    $('#delete-row').val(1);
-                    $('#add-new-row').hide();
-                    $('#invoice-body tr').toggleClass("delete-invoice-row");
-                    $('.delete-invoice-row').click(function(){
-                        $(this).remove();
-                        $('#delete-row').val(0);
-                        $('#add-new-row').show();
-                        $('#invoice-body tr').removeClass("delete-invoice-row");
-
-                    });
-                }
-                else {
-                    $('#delete-row').val(0);
+            $('#delete-row').click(function() {
+                state = !state;
+                if (state == 1) {
+                    $('#invoice-body tr').addClass("delete-invoice-row");
+                    $('#add-new-row').attr("disabled", true);
+                } else {
                     $('#invoice-body tr').removeClass("delete-invoice-row");
-                    $('#add-new-row').show();
+                    $('#add-new-row').attr("disabled", false);
                 }
-                
-            }); */
+            });
+
+            $('.delete-invoice-row').click(function() {
+                if (state == 1) {
+                    $(this).remove();
+                    $('#invoice-body tr').removeClass("delete-invoice-row");
+                    $('#add-new-row').attr("disabled", false);
+                    state = 0;
+                }
+            });
+
 
         });
-</script>
-<body>
 
-    <% include infobars %>
+    </script>
 
-    
-    <!-- ----------- CONTENT ------------- -->
-    <div class="content">
-    <div class="invoice-header">
-            <h3 id="invoice-number">Invoice Number : <%= Math.floor(Math.random()*100000) %></h3>
-            <h3 align="right">Date : <% var today = new Date(); %><%= (today.toDateString()).substr(4) %></h3>
-        </div>
-        <table class="table invoice-table">
-            <thead>
-                <tr>
-                    <th class="col-md-2">Product ID</th>
-                    <th class="col-md-4">Name</th>
-                    <th class="col-md-2">Price</th>
-                    <th class="col-md-2">Quantity</th>
-                    <th class="col-md-2">Total</th>
-                </tr>
-            </thead>
+    <body>
 
-            <tbody id="invoice-body">
-                <tr id="invoice-row">
-                    <td>
-                        <input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid[]"> </td>
-                    <td>
-                        <input required class="form-control" type="text" placeholder="Product Name" id="productName1" name="productname[]"> </td>
-                    <td>
-                        <div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span>
-                            <input required class="form-control" placeholder="Price" id="productPrice" name="productprice[]">
-                        </div>
-                    </td>
-                    <td>
-                        <input required class="form-control" type="number" placeholder="Qty" id="productQuantity" name="productquantity[]"> </td>
-                    <td>
-                        <input required class="form-control" readonly id="productTotal" name="producttotal[]"> </td>
-                </tr>
+        <% include infobars %>
 
-            </tbody>
-        </table>
-        <button type="button" class="btn btn-success" id="add-new-row">ADD NEW ITEM</button>
-        <button type="submit" class="btn btn-danger" id="delete-row" value="0" style="margin-left: 20px;">DELETE ITEM</button>
-       </div>
-</body>
 
-</html>
+            <!-- ----------- CONTENT ------------- -->
+            <div class="content">
+                <div class="invoice-header">
+                    <h3 id="invoice-number">Invoice Number : <%= Math.floor(Math.random()*100000) %></h3>
+                    <h3 align="right">Date : <% var today = new Date(); %><%= (today.toDateString()).substr(4) %></h3>
+                </div>
+                <table class="table invoice-table">
+                    <thead>
+                        <tr>
+                            <th class="col-md-2">Product ID</th>
+                            <th class="col-md-3">Name</th>
+                            <th class="col-md-2">Price</th>
+                            <th class="col-md-2">Quantity</th>
+                            <th class="col-md-2">Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="invoice-body">
+                        <tr id="invoice-row">
+                            <td>
+                                <input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid[]"> </td>
+                            <td>
+                                <input required class="form-control" type="text" placeholder="Product Name" id="productName1" name="productname[]"> </td>
+                            <td>
+                                <div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span>
+                                    <input required class="form-control" placeholder="Price" id="productPrice" name="productprice[]">
+                                </div>
+                            </td>
+                            <td>
+                                <input required class="form-control" type="number" placeholder="Qty" id="productQuantity" name="productquantity[]"> </td>
+                            <td>
+                                <input required class="form-control" readonly id="productTotal" name="producttotal[]"> </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div class="col-md-9">
+                <button type="button" class="btn btn-success" id="add-new-row">ADD NEW ITEM</button>
+                <button type="submit" class="btn btn-danger" id="delete-row" value="0" style="margin-left: 20px;">DELETE ITEM</button>
+                </div>
+
+                <div class="col-md-3 invoice-totals" align="right">
+                    <span class="invoice-subtotal">Subtotal : &#8377 0.00</span>
+                    <input class="form-control" type="number" id="invoice-tax" placeholder="VAT 0.00 %"></input>
+                    <span class="invoice-grandtotal">Grand Total : &#8377 0.00</span>
+                </div>
+            </div>
+    </body>
+
+    </html>
