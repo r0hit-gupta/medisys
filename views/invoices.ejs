@@ -34,6 +34,16 @@
             $(".invoice-grandtotal").html("Grand total : &#8377 " + grandTotal.toFixed(2));
         }
 
+        function disableDelete(){
+            if($('tr').length <= 2){
+                console.log("leng");
+                $('#delete-row').attr("disabled", true);
+            }
+            else {
+                $('#delete-row').attr("disabled", false);
+            }
+        }
+
         $(document).ready(function() {
 
             $('.content').on('change', 'input', function() {
@@ -91,6 +101,7 @@
                 $('#productName' + i).autocomplete({
                     source: productSource
                 }, autocomplete_options);
+                disableDelete();
                 i++;
             });
 
@@ -101,22 +112,35 @@
                 if (state == 1) {
                     $('#invoice-body tr').addClass("delete-invoice-row");
                     $('#add-new-row').attr("disabled", true);
+
                 } else {
                     $('#invoice-body tr').removeClass("delete-invoice-row");
                     $('#add-new-row').attr("disabled", false);
                 }
             });
 
-            $('.delete-invoice-row').click(function() {
-                if (state == 1) {
-                    $(this).remove();
+            $('tbody').on("click", 'tr', function(){
+                    if (state == 1) {
+                    $(this).trigger('rowdelete').remove();
                     $('#invoice-body tr').removeClass("delete-invoice-row");
                     $('#add-new-row').attr("disabled", false);
+                    disableDelete();
                     state = 0;
                 }
             });
 
+            $('tbody').on("rowdelete", 'tr', function(){
+                var inputs = $(".content input");
+                calculateTotal(inputs);
+                subTotal();
+                grandTotal();
+            });
 
+            (function(){
+                disableDelete();
+            })();
+
+            
         });
 
     </script>
