@@ -1,10 +1,10 @@
 <% include header %>
     <script>
         // Invoice autocomplete
-        var subtotal = 0;
-        var itemtotal = 0;
+        var vattotal = 0;
+        
         function calculateTotal(src) {
-            
+            var itemtotal = 0;
             var row = $(src).closest('tr');
             var price = row.find('#productPrice').val();
             var qty = row.find('#productQuantity').val();
@@ -13,19 +13,20 @@
         }
         
         function subTotal(){
-            
+            var subtotal = 0;
             $('tr').each(function(){
                 var temp = $(this).find('#productTotal').val();
                 if (temp) {
                 subtotal += parseFloat(temp);
-            }
+                }
             });
+            vattotal = subtotal;
             $(".invoice-subtotal").html("Subtotal : &#8377 " + subtotal.toFixed(2));
 
         }
 
         function grandTotal(){
-            var grandTotal = subtotal;
+            var grandTotal = vattotal;
             var vat = parseFloat($("#invoice-tax").val());
             if (vat > 0) {
                 grandTotal = grandTotal + ((vat/100)*grandTotal);
@@ -35,8 +36,7 @@
 
         $(document).ready(function() {
 
-
-            $('#invoice-body').on('change', 'input', function() {
+            $('.content').on('change', 'input', function() {
                 calculateTotal(this);
                 subTotal();
                 grandTotal();
