@@ -182,13 +182,44 @@ router.get('/addproduct', checkAuth, function(req, res) {
 /* GET Invoices Page. */
 router.get('/invoices', checkAuth, function(req, res, next) {
     var db = req.db;
-    var collection = db.get('products');
+    var collection = db.get('invoices');
     collection.find({},{},function(e,docs){
         //res.send(docs);
         res.render('invoices', {
             title : "Invoices",
-            "products" : docs,
+            "invoices" : docs,
         }); 
+    });
+    
+});
+
+router.get('/invoices/new', checkAuth, function(req, res, next) {
+        res.render('createinvoice', {
+            title : "Create New Invoice"
+    });
+    
+});
+
+router.get('/invoices/:number', checkAuth, function(req, res, next) {
+        
+        var invoiceNumber = req.params.number;
+
+        var db = req.db;
+        var query = {
+          number: {
+            $regex: invoiceNumber,
+            $options: 'i' //i: ignore case, m: multiline, etc
+          }
+        };
+
+    var collection = db.get('invoices');
+    collection.find(query ,{},function(e,docs){
+        //console.log(docs);
+        res.render('invoicetemplate', {
+            title : 'Invoice #'+invoiceNumber,
+            "invoice" : docs,
+
+        });
     });
     
 });
@@ -363,10 +394,32 @@ router.get('/api/scrape', checkAuth, function(req, res){
 
 /* POST Invoices */
 router.post('/post/invoice', checkAuth, function(req, res) {
+   var details = req.body;
+   var invoiceNumber = req.body.number;
+   req.body.date = new Date(req.body.date);
+   if(!Array.isArray(req.body.productid)){
+        req.body.productid = new Array(req.body.productid);
+        req.body.productname = new Array(req.body.productname);
+        req.body.productprice = new Array(req.body.productprice);
+        req.body.productquantity = new Array(req.body.productquantity);
+        req.body.producttotal = new Array(req.body.producttotal);
 
-    // Set our internal DB variable
-   var id = req.body;
-   res.send(id);
+   }
+
+   res.send(req.body);
+   var db = req.db;
+   var collection = db.get('invoices');
+   
+   /*collection.insert(details, function (err, doc) {
+        if (err) {
+            // If it failed, return error
+            res.send("Error");
+        }
+        else {
+            // And forward to success page
+            res.redirect("/invoices/"+ invoiceNumber);
+        }
+    }); */
     
 });
 

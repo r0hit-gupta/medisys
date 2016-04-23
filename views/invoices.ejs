@@ -1,230 +1,53 @@
 <% include header %>
-    <script>
-        // Invoice autocomplete
-        var vattotal = 0;
-        
-        function calculateTotal(src) {
-            var itemtotal = 0;
-            var row = $(src).closest('tr');
-            var price = row.find('#productPrice').val();
-            var qty = row.find('#productQuantity').val();
-            itemtotal = parseFloat(price * qty).toFixed(2); 
-            row.find('#productTotal').val(itemtotal);
-        }
-        
-        function subTotal(){
-            var subtotal = 0;
-            $('tr').each(function(){
-                var temp = $(this).find('#productTotal').val();
-                if (temp) {
-                subtotal += parseFloat(temp);
-                }
-            });
-            vattotal = subtotal;
-            $(".invoice-subtotal input").val(subtotal.toFixed(2));
 
-        }
+<body>
 
-        function grandTotal(){
-            var grandTotal = vattotal;
-            var vat = parseFloat($("#invoice-tax").val());
-            if (vat > 0) {
-                grandTotal = grandTotal + ((vat/100)*grandTotal);
-            }
-            $(".invoice-grandtotal input").val(grandTotal.toFixed(2));
-        }
+    <% include infobars %>
 
-        function disableDelete(){
-            if($('tr').length <= 2){
-                console.log("leng");
-                $('#delete-row').attr("disabled", true);
-            }
-            else {
-                $('#delete-row').attr("disabled", false);
-            }
-        }
-
-        $(document).ready(function() {
-
-            $('.content').on('change', 'input', function() {
-                calculateTotal(this);
-                subTotal();
-                grandTotal();
-            });
-
-            var i = 2;
-            var productSource;
-
-            var autocomplete_options = {
-                source: productSource,
-                minLength: 0,
-                //source: productSource,
-                focus: function(event, ui) {
-                    $(this).val(ui.item.label);
-                    return false;
-                },
-                select: function(event, ui) {
-                    var itemrow = $(this).closest('tr');
-                    itemrow.find("#productID").val("MED" + ("000" + ui.item.productid).substr(-3));
-                    itemrow.find("#productPrice").val(ui.item.price);
-                    itemrow.find("#productQuantity").attr({
-                        "max": ui.item.stock,
-                        "placeholder": "In Stock : " + ui.item.stock
-                    });
-                    itemrow.find("#productTotal").val(0);
-                    itemrow.find("#productQuantity").focus();
-                    return false;
-                }
-            };
-
-            $.get("/api/products", function(data) {
-                productSource = data;
-            });
-
-
-
-            $("#productName1").on("focus", function() {
-                $(this).autocomplete({
-                        source: productSource
-                    }, autocomplete_options)
-                    .autocomplete("instance")._renderItem = function(ul, item) {
-                        return $("<li>")
-                            .append("<a>" + item.label + "</a>")
-                            .appendTo(ul);
-                    };
-            });
-
-            // Add New Row on Invoice Page
-            $('#add-new-row').click(function() {
-                var newRow = ('<tr id="invoice-row"><td><input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid"> </td><td><input required class="form-control" type="text" placeholder="Product Name" id="productName' + i + '" name="productname"> </td><td><div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span><input required class="form-control" placeholder="Price" id="productPrice" name="productprice"></div></td><td><input required class="form-control" type="number" placeholder="Qty" id="productQuantity" min="0" name="productquantity"> </td><td><input required class="form-control" readonly id="productTotal" name="producttotal"> </td></tr>');
-                $('#invoice-body').append(newRow);
-                $('#productName' + i).autocomplete({
-                    source: productSource
-                }, autocomplete_options);
-                disableDelete();
-                i++;
-            });
-
-            var state = 0;
-
-            $('#delete-row').click(function() {
-                state = !state;
-                if (state == 1) {
-                    $('#invoice-body tr').addClass("delete-invoice-row");
-                    $('#add-new-row').attr("disabled", true);
-
-                } else {
-                    $('#invoice-body tr').removeClass("delete-invoice-row");
-                    $('#add-new-row').attr("disabled", false);
-                }
-            });
-
-            $('tbody').on("click", 'tr', function(){
-                    if (state == 1) {
-                    $(this).trigger('rowdelete').remove();
-                    $('#invoice-body tr').removeClass("delete-invoice-row");
-                    $('#add-new-row').attr("disabled", false);
-                    disableDelete();
-                    state = 0;
-                }
-            });
-
-            $('tbody').on("rowdelete", 'tr', function(){
-                var inputs = $(".content input");
-                calculateTotal(inputs);
-                subTotal();
-                grandTotal();
-            });
-
-            (function(){
-                disableDelete();
-            })();
-
+    
+    <!-- ----------- CONTENT ------------- -->
+    <div class="content">
+    <form action="/products/search" id='product-search' method="get" style="margin-top: -50px; margin-bottom: 50px;">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search for a Invoice..." id="product-search-input" required name="keyword">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">Go!</button>
+                  </span>
+                </div>
+                  </form>
+                  <% if (invoices.length == 0){ %>
+                  <h3>No Invoice Found !</h3>
+                  <% } else { %>
+        <table class="table pure-table">
+            <thead>
+                <tr>
+                    <th>Invoice Number</th>
+                    <th>Customer Name</th>
+                    <th>Number of Products</th>
+                    <th>Invoice Amount</th>
+                    <th>Invoice Date</th>
+                </tr>
+            </thead>
             
-        });
-
-    </script>
-
-    <body>
-
-        <% include infobars %>
-
-
-            <!-- ----------- CONTENT ------------- -->
-            <div class="content">
-            <form action="/post/invoice" method="post">
-                <div class="invoice-header">
-                    <h3 id="invoice-number">Invoice Number : <input style="border:none;background:none;" type="number" name="invoicenum" value="<%= Math.floor(Math.random()*100000) %>" readonly></h3>
-                    <h3 align="right">Date : <input style="border:none;background:none;" type="date" id="invdate" name="invdate" value="" ></h3>
-                    <script>
-                    Date.prototype.toDateInputValue = (function() {
-    var local = new Date(this);
-    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-    return local.toJSON().slice(0,10);
-});
-document.getElementById('invdate').value = new Date().toDateInputValue();</script>
-                <div class="cust-info form-inline">
-                  <div class="form-group">
-                <label for="custname">Customer Name : </label>
-                <input required class="form-control" type="text" placeholder="Customer Name" id="custname" name="custname">
-                </div>
-                <div class="form-group">
-                <label for="custphone">Phone Number : </label>
-                                <input required class="form-control" type="text" maxlength="10" placeholder="Customer Phone" id="custphone" name="phone">
-                </div>
-                <div class="form-group">
-                <label for="custaddress">Address : </label>
-                                <input required class="form-control" type="text" placeholder="Customer Address" id="custaddress" name="address">
-                                </div>
-                </div>
+            <tbody>
+            <% for (var i = 0; i < invoices.length; i++){ %>       
+                <tr onclick="location.href='/invoices/<%= invoices[i].number %>'">
+                    <td><%= invoices[i].number %></td>
+                    <td><%= invoices[i].custname %></td>
+                    <td><%= invoices[i].productid.length %></td>
+                    <td><%= invoices[i].grandtotal %></td>
+                    <td><%= (invoices[i].date.toDateString()).substr(4) %></td>
+                </tr></a>
                 
-                <table class="table invoice-table">
-                    <thead>
-                        <tr>
-                            <th class="col-md-2">Product ID</th>
-                            <th class="col-md-3">Name</th>
-                            <th class="col-md-2">Price</th>
-                            <th class="col-md-2">Quantity</th>
-                            <th class="col-md-2">Total</th>
-                        </tr>
-                    </thead>
+            <% } %>
+            </tbody>
+        </table>
+        <a href="/invoices/new"><div class="button">CREATE NEW INVOICE</div></a>
 
-                    <tbody id="invoice-body">
-                        <tr id="invoice-row">
-                            <td>
-                                <input required class="form-control" type="text" placeholder="Product ID" id="productID" name="productid"> </td>
-                            <td>
-                                <input required class="form-control" type="text" placeholder="Product Name" id="productName1" name="productname"> </td>
-                            <td>
-                                <div class="input-group"><span class="input-group-addon" id="basic-addon1">&#8377</span>
-                                    <input required class="form-control" placeholder="Price" id="productPrice" name="productprice">
-                                </div>
-                            </td>
-                            <td>
-                                <input required class="form-control" type="number" placeholder="Qty" id="productQuantity" min="0" name="productquantity"> </td>
-                            <td>
-                                <input required class="form-control" readonly id="productTotal" name="producttotal"> </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-                <div class="invoice-buttons">
-                <button type="button" class="btn btn-success" id="add-new-row">ADD NEW ITEM</button>
-                <button type="button" class="btn btn-danger" id="delete-row" value="0" style="margin-left: 20px;">DELETE ITEM</button>
-                <button type="submit" class="btn btn-primary" id="submit-invoice">SAVE INVOICE</button>
-                </div>
+<% } %>
                 
+            
+    </div>
+</body>
 
-                <div class="invoice-totals">
-                    <span class="invoice-subtotal">Subtotal : &#8377 <input style="border:none;background:none;" name="subtotal" value="0.00" readonly></span>
-                    <div class="input-group">
-                    <input class="form-control" id="invoice-tax" name="vat" placeholder="VAT 0.00 %" value=""></input>
-                    <span class="input-group-addon" id="basic-addon2">%</span>
-                    </div>
-                    <span class="invoice-grandtotal">Grand Total : &#8377<input style="border:none;background:none;" name="grandtotal" value="0.00" readonly></span>
-                </div>
-                </form>
-            </div>
-    </body>
-
-    </html>
+</html>

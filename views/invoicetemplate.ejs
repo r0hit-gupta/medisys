@@ -1,0 +1,119 @@
+<% include header %>
+
+<body>
+
+    <% include infobars %>
+
+    
+    <!-- ----------- CONTENT ------------- -->
+    <div class="content">
+
+<div class="container">
+<style scoped>
+    .invoice-title h2, .invoice-title h3 {
+    display: inline-block;
+}
+
+.table > tbody > tr > .no-line {
+    border-top: none;
+}
+
+.table > thead > tr > .no-line {
+    border-bottom: none;
+}
+
+.table > tbody > tr > .thick-line {
+    border-top: 2px solid;
+}
+</style>
+    <div class="row">
+        <div class="col-xs-12">
+    		<div class="invoice-title">
+    			<h2>Invoice #<%= invoice[0].number %></h2><h3 class="pull-right"><%= (invoice[0].date.toDateString()).substr(4) %></h3>
+    		</div>
+    		<hr>
+    		<div class="row">
+    			<div class="col-xs-6">
+    				<address>
+    				<strong>Billed To:</strong><br>
+    					 <%= invoice[0].custname %><br>
+                         <%= invoice[0].custphone %><br>
+                         <%= invoice[0].custaddress %>
+    				</address>
+    			</div>
+    			<div class="col-xs-6 text-right">
+    				<address>
+        			<strong>Billed By:</strong><br>
+    					TEAM MEDISYS<br>
+    					CSE-2H<br>
+    					Chitkara University<br>
+    					Rajpura
+    				</address>
+    			</div>
+    		</div>
+
+    	</div>
+    </div>
+    
+    <div class="row">
+    	<div class="col-md-12">
+    		<div class="panel panel-default">
+    			<div class="panel-heading">
+    				<h3 class="panel-title"><strong>Order summary</strong></h3>
+    			</div>
+    			<div class="panel-body">
+    				<div class="table-responsive">
+    					<table class="table table-condensed">
+    						<thead>
+                                <tr>
+        							<td><strong>Product ID</strong></td>
+        							<td class="text-left"><strong>Name</strong></td>
+        							<td class="text-center"><strong>Price</strong></td>
+        							<td class="text-center"><strong>Quantity</strong></td>
+                                    <td class="text-right"><strong>Totals</strong></td>
+                                </tr>
+    						</thead>
+    						<tbody>
+    							<% for (var i = 0; i < invoice[0].productid.length; i++){ %> 
+    							<tr>
+    								<td><%= invoice[0].productid[i] %></td>
+    								<td class="text-left"><%= invoice[0].productname[i] %></td>
+    								<td class="text-center">&#8377 <%= invoice[0].productprice[i] %></td>
+    								<td class="text-center"><%= invoice[0].productquantity[i] %></td>
+                                    <td class="text-right"><%= invoice[0].producttotal[i] %></td>
+    							</tr>
+                                <% } %>
+    							<tr>
+    								<td class="thick-line"></td>
+    								<td class="thick-line"></td>
+                                    <td class="thick-line"></td>
+    								<td class="thick-line text-right"><strong>Subtotal</strong></td>
+    								<td class="thick-line text-right">&#8377 <%= invoice[0].subtotal %></td>
+    							</tr>
+    							<tr>
+                                    <td class="no-line"></td>
+                                    <td class="no-line"></td>
+                                    <td class="no-line"></td>
+                                    <td class="no-line text-right"><strong>VAT</strong></td>
+                                    <td class="no-line text-right"><%= invoice[0].vat %> %</td>
+                                </tr>
+                                <tr>
+                                    <td class="no-line"></td>
+                                    <td class="no-line"></td>
+                                    <td class="no-line"></td>
+                                    <td class="no-line text-right"><strong>Grand Total</strong></td>
+                                    <td class="no-line text-right">&#8377 <%= invoice[0].grandtotal %></td>
+                                </tr>
+    						</tbody>
+    					</table>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+</div>
+
+   </div>
+</body>
+
+</html>
