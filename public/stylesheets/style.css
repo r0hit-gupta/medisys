@@ -348,6 +348,18 @@ a:hover {
 
 /* ----------  INVOICES ---------- */
 
+.cust-info {
+    padding-bottom: 20px;
+}
+
+.cust-info input{
+    margin-right: 15px;
+}
+.cust-info #custaddress{
+    margin-right: 0;
+    width: 440px;
+}
+
 .invoice-table {
     border: 1px solid #ddd;
     font-family: mangal;
@@ -388,6 +400,9 @@ a:hover {
 }
 
 .invoice-totals {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 40%;
 }
 .invoice-subtotal {
     margin-bottom: 10px;
@@ -403,3 +418,7 @@ a:hover {
     
 }
 
+.invoice-buttons{
+    display: inline-block;
+    width: 50%;
+}

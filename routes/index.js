@@ -45,7 +45,7 @@ router.get('/dashboard', checkAuth, function(req, res, next) {
     }
 
     var stockWarning, expiryWarning, adminNotes;
-	var db = req.db;
+    var db = req.db;
     var collection = db.get('products');
     var settingsdb = db.get('settings');
 
@@ -165,8 +165,8 @@ router.get('/editproduct', checkAuth, function(req, res, next) {
 
 /* GET Add New Product page. */
 router.get('/addproduct', checkAuth, function(req, res) {
-	var success = req.query.success;
-	var db = req.db;
+    var success = req.query.success;
+    var db = req.db;
     var collection = db.get('suppliers');
     collection.find({},{},function(e,docs){
         res.render('addproduct', {
@@ -331,7 +331,7 @@ router.post('/post/settings', checkAuth, function(req, res) {
 
 
 
-/* POST Medicine Search Scraper */
+/* GET Medicine Search Scraper */
 router.get('/api/scrape', checkAuth, function(req, res){
 
     var keyword = req.query.keyword; 
@@ -360,6 +360,17 @@ router.get('/api/scrape', checkAuth, function(req, res){
         }
     });
 });
+
+/* POST Invoices */
+router.post('/post/invoice', checkAuth, function(req, res) {
+
+    // Set our internal DB variable
+   var id = req.body;
+   res.send(id);
+    
+});
+
+
 
 /* Autocomplete Invoice */
 router.get('/api/products', checkAuth, function(req, res){
