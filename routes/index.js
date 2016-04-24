@@ -397,6 +397,7 @@ router.post('/post/invoice', checkAuth, function(req, res) {
    var details = req.body;
    var invoiceNumber = req.body.number;
    req.body.date = new Date(req.body.date);
+   req.body.grandtotal = parseInt(req.body.grandtotal);
    if(!Array.isArray(req.body.productid)){
         req.body.productid = new Array(req.body.productid);
         req.body.productname = new Array(req.body.productname);
@@ -406,11 +407,11 @@ router.post('/post/invoice', checkAuth, function(req, res) {
 
    }
 
-   res.send(req.body);
+   //res.send(req.body);
    var db = req.db;
    var collection = db.get('invoices');
    
-   /*collection.insert(details, function (err, doc) {
+   collection.insert(details, function (err, doc) {
         if (err) {
             // If it failed, return error
             res.send("Error");
@@ -419,7 +420,7 @@ router.post('/post/invoice', checkAuth, function(req, res) {
             // And forward to success page
             res.redirect("/invoices/"+ invoiceNumber);
         }
-    }); */
+    }); 
     
 });
 
@@ -446,5 +447,39 @@ router.get('/api/products', checkAuth, function(req, res){
         res.send(docs);
         });
 });
+
+
+/* GET Stats Page */
+router.get('/stats', function(req, res, next) {
+   /* res.render('stats', {
+        title : "Statistics"
+    }); */
+   var db = req.db;
+    var collection = db.get('invoices');
+
+    var query = [
+    {
+        $group : {
+           _id : { month: { $month: "$date" }, year: { $year: "$date" } },
+           sales: { $sum: "$grandtotal" },
+           count: { $sum: 1 }
+        }
+      }];
+    collection.col.aggregate(query, function (err, doc) {
+        if (err) {
+            // If it failed, return error
+            res.send("fail");
+        }
+        else {
+            // And forward to success page
+            res.render('stats', {
+                title : "Statistics",
+                monthSales: doc
+    });;
+        }
+    });
+    
+});
+
 
 module.exports = router;

@@ -6,7 +6,7 @@
 
     
     <!-- ----------- CONTENT ------------- -->
-    <div class="content">
+    <div class="content" align="center">
     <form action="/products/search" id='product-search' method="get" style="margin-top: -50px; margin-bottom: 50px;">
                 <div class="input-group">
                   <input type="text" class="form-control" placeholder="Search for a Invoice..." id="product-search-input" required name="keyword">
@@ -35,14 +35,14 @@
                     <td><%= invoices[i].number %></td>
                     <td><%= invoices[i].custname %></td>
                     <td><%= invoices[i].productid.length %></td>
-                    <td><%= invoices[i].grandtotal %></td>
+                    <td>&#8377 <%= invoices[i].grandtotal %></td>
                     <td><%= (invoices[i].date.toDateString()).substr(4) %></td>
                 </tr></a>
                 
             <% } %>
             </tbody>
         </table>
-        <a href="/invoices/new"><div class="button">CREATE NEW INVOICE</div></a>
+        <a href="/invoices/new"><div class="btn btn-success">CREATE NEW INVOICE</div></a>
 
 <% } %>
                 
