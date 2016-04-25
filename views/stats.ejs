@@ -1,6 +1,7 @@
 <% include header %>
 <body>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js"></script>
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
 	<% include infobars %>
 	
 	<div class="content" id="content-widget">
@@ -56,28 +57,47 @@
 		<div class="widget" id="widget1">
 			<div class="widget-heading">MONTHLY SALES OVERVIEW</div>
 			<div class="widget-content" align="center">
-				<div class='chart' id='p1'>
-					<canvas id='c1'></canvas>
+				<div class='chart' align="center">
+					<canvas id='chart1' width="500" height="300"></canvas>
 				</div>
 				
 			</div>
 		</div>
 		<div class="widget" id="widget2">
-			<div class="widget-heading">ONLINE MEDICINE SEARCH</div>
+			<div class="widget-heading">TOP SELLING PRODUCTS</div>
 			<div class="widget-content">
-				
+				<div class='chart' align="center">
+					<canvas id='chart2' width="500" height="300"></canvas>
+				</div>
 			</div>
 		</div>
 		
-		<div class="widget" id="widget3">
-			<div class="widget-heading">NOTES FROM THE ADMIN</div>
+		<div class="widget" id="widget4">
+			<div class="widget-heading">TOP CUSTOMERS</div>
 			<div class="widget-content" align="center">
+			<div class='chart' align="center">
+					<canvas id='chart4' width="500" height="300"></canvas>
+				</div>
 				
 			</div>
 		</div>
-		<div class="widget" id="widget4">
-			<div class="widget-heading">PRODUCTS EXPIRING IN 3 MONTHS</div>
+		<div class="widget" id="widget3">
+			<div class="widget-heading">SUPPLIER DEPENDENCY OVERVIEW</div>
 			<div class="widget-content" align="center">
+			<div class='chart' align="center" style="display: inline-block;width: 300px;">
+					<canvas id='chart3' width="300" height="300"></canvas>
+				</div>
+				<div class="bar-legends" align="left" style="display: inline-block; width: 220px; height: 100%; margin-bottom: 300px; font-size: 15px; font-weight: bold;">
+					<ul>
+					<li><span style="color: #FF5A5E; font-size: 25px;">■</span> Lupin Ltd</li>
+					<li><span style="color: #46BFBD; font-size: 25px;">■</span> Abott Pvt Ltd</li>
+					<li><span style="color: #FDB45C; font-size: 25px;">■</span> Cipla Pharm. Pvt Ltd</li>
+					<li><span style="color: #FFF; font-size: 25px;">■</span></li>
+					<li><span style="color: #FFF; font-size: 25px;">■</span></li>
+					<li><span style="color: #FFF; font-size: 25px;">■</span></li>
+					
+					</ul>
+				</div>
 				
 			</div>
 		</div>
@@ -97,13 +117,11 @@
 	var monthSales = monthSales;
 	monthSales = salesDataToArray(monthSales);
 	%>
-	console.log([<%= monthSales %>]); 
 
 	// Monthly Sales Chart
-	var c1 = document.getElementById("c1");
-	var parent = document.getElementById("p1");
-	c1.width = 500;
-	c1.height = 300;  
+	var chart1 = document.getElementById("chart1");
+
+
 	var data1 = {
 	labels : ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
 	datasets : [
@@ -132,7 +150,146 @@
     scaleGridLineColor : "rgba(0,0,0,.05)",
     scaleGridLineWidth : 1
 	}
-	new Chart(c1.getContext("2d")).Line(data1,options1);
+	new Chart(chart1.getContext("2d")).Line(data1,options1);
+
+	console.log(<% supplierView %>)
+
+	// TOP SELLING PRODUCTS CHART
+	<% 
+	var nameLabel = [];
+	var quantityLabel = [];
+
+function topProductGenerator(data){
+
+	//Convert to integer 
+	function toInt(arr){
+		var arr = arr.map(function (x) { 
+    		return parseInt(x, 10);
+    	});
+    	return arr;
+	}
+	
+		var productSold = {};
+		for (var i = 0; i < data.length; i++) {
+			data[i].productquantity = toInt(data[i].productquantity);
+			for (var j = 0; j < data[i].productname.length; j++) {
+				//console.log("found " + data[i].productname[j],data[i].productquantity[j] );
+				if(productSold.hasOwnProperty(data[i].productname[j])){
+					//console.log("HasOwn prop " + data[i].productname[j], productSold[data[i].productname[j]]);
+					productSold[data[i].productname[j]] += data[i].productquantity[j];
+					//console.log("New Qty " + productSold[data[i].productname[j]]);
+				}
+				else {
+					productSold[data[i].productname[j]] = data[i].productquantity[j];
+				}
+			}
+		}
+
+		//Sorting Products Sold Descending
+
+		var sortable = [];
+		for (var product in productSold){
+			sortable.push([product, productSold[product]]);
+		}
+      	
+		sortable.sort(function(a, b) {return b[1] - a[1]});
+
+		
+
+		for (var i = 0; i < 6; i++) {
+			nameLabel.push(sortable[i][0]);
+			quantityLabel.push(sortable[i][1]);
+		}
+
+		//console.log(nameLabel, quantityLabel);
+
+		
+		//console.log(productSold);
+	}
+	//console.log(data);
+	topProductGenerator(invoiceData);
+
+	%>
+	var chart2 = document.getElementById("chart2");
+
+	var data2 = {
+    labels: <%- JSON.stringify(nameLabel) %>,
+    datasets: [
+        {
+            label: "My First dataset",
+            fillColor: "rgba(22, 160, 133, 0.6)",
+            highlightFill: "rgba(22, 160, 133, 0.8)",
+            data: [<%= quantityLabel %>]
+        }
+    ]
+};
+
+var myBarChart = new Chart(chart2.getContext("2d")).Bar(data2, {
+    barShowStroke: false,
+});
+
+
+
+	// Supplier Chart
+	   var chart3 = document.getElementById("chart3");
+
+	   var data3 = [
+    {
+        value: <%= supplierView[0].count %>,
+        color:"#F7464A",
+        highlight: "#FF5A5E",
+        label: "<%= supplierView[0]._id %>"
+    },
+    {
+        value: <%= supplierView[1].count %>,
+        color: "#46BFBD",
+        highlight: "#5AD3D1",
+        label: "<%= supplierView[1]._id %>"
+    },
+    {
+        value: <%= supplierView[2].count %>,
+        color: "#FDB45C",
+        highlight: "#FFC870",
+        label: "<%= supplierView[2]._id %>"
+    }
+]
+
+
+	var doughnutChart = new Chart(chart3.getContext("2d")).Doughnut(data3,{
+    animateScale: false,
+    animationEasing : "easeOutSine",
+    animationSteps: 40
+});
+
+
+	// TOP CUSTOMERS CHART
+	<%
+	var customerNameLabel = [];
+	var purchaseLabel = [];
+	 for (var i = 0; i < 6; i++) {
+			customerNameLabel.push(invoiceData[i].custname);
+			purchaseLabel.push(invoiceData[i].grandtotal);
+		}
+		console.log(customerNameLabel);	%>
+	var chart4 = document.getElementById("chart4");
+
+	var data4 = {
+    labels: <%- JSON.stringify(customerNameLabel) %>,
+    datasets: [
+        {
+            label: "My First dataset",
+            fillColor: "rgba(44, 62, 80, .6)",
+            highlightFill: "rgba(44, 62, 80, .8)",
+            data: [<%= purchaseLabel %>]
+        }
+    ]
+};
+
+var myBarChart2 = new Chart(chart4.getContext("2d")).Bar(data4, {
+    barShowStroke: false,
+
+});
+
 	</script>
 </body>
 </html>

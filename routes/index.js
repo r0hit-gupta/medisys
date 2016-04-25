@@ -14,7 +14,7 @@ function checkAuth(req, res, next) {
         message : "Please login to access the panel.",
     });
   } else {
-    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+    //res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
     next();
   }
 }
@@ -397,7 +397,7 @@ router.post('/post/invoice', checkAuth, function(req, res) {
    var details = req.body;
    var invoiceNumber = req.body.number;
    req.body.date = new Date(req.body.date);
-   req.body.grandtotal = parseInt(req.body.grandtotal);
+   req.body.grandtotal = parseFloat(req.body.grandtotal);
    if(!Array.isArray(req.body.productid)){
         req.body.productid = new Array(req.body.productid);
         req.body.productname = new Array(req.body.productname);
@@ -451,13 +451,12 @@ router.get('/api/products', checkAuth, function(req, res){
 
 /* GET Stats Page */
 router.get('/stats', function(req, res, next) {
-   /* res.render('stats', {
-        title : "Statistics"
-    }); */
+
    var db = req.db;
     var collection = db.get('invoices');
+    var products = db.get('products');
 
-    var query = [
+    var saleQuery = [
     {
         $group : {
            _id : { month: { $month: "$date" }, year: { $year: "$date" } },
@@ -465,18 +464,27 @@ router.get('/stats', function(req, res, next) {
            count: { $sum: 1 }
         }
       }];
-    collection.col.aggregate(query, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            res.send("fail");
-        }
-        else {
+
+     var supplierQuery =  { 
+    $group : {_id : "$supplierName", count : { $sum : 1 }}
+    };
+
+
+    collection.col.aggregate(saleQuery, function (err, saleData) {
             // And forward to success page
-            res.render('stats', {
-                title : "Statistics",
-                monthSales: doc
-    });;
-        }
+        products.col.aggregate(supplierQuery, function (err, count) {
+            collection.find({},{},function(e,invoiceData){
+                //res.json(invoiceData);
+                res.render('stats', {
+                    title : "Statistics",
+                    monthSales: saleData,
+                    supplierView: count,
+                    invoiceData: invoiceData
+
+                 });
+
+       });
+        });
     });
     
 });
